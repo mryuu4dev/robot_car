@@ -42,42 +42,42 @@ void readNextDistance() {
 
 void setup() {
   
- /* Ultrasonic Module pins */
- pinMode(trigPin, OUTPUT);
- pinMode(echoPin, INPUT);
- digitalWrite(trigPin, LOW);
+  /* Ultrasonic Module pins */
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  digitalWrite(trigPin, LOW);
 
- servo.attach(servoPin);
- servo.write(90);
- 
- motorDriver.testMotors();
+  servo.attach(servoPin);
+  servo.write(90);
 
- servo.write(sensorAngle[0]);
- delay(200);
+  motorDriver.testMotors();
 
- for (unsigned char i = 0; i < NUM_ANGLES; i++) {
-   readNextDistance();
-   delay(200);
- }
+  servo.write(sensorAngle[0]);
+  delay(200);
+
+  for (unsigned char i = 0; i < NUM_ANGLES; i++) {
+    readNextDistance();
+    delay(200);
+  }
 }
 
 void loop() {
- readNextDistance();
+  readNextDistance();
 
- unsigned char tooClose = 0;
- for (unsigned char i = 0; i < NUM_ANGLES; i++) {
-   if (distance[i] < 300) {
-     tooClose = 1;
-   }
-   if (tooClose) {
-    motorDriver.go(MotorDriver::Motor::LEFT, -220);
-    motorDriver.go(MotorDriver::Motor::RIGHT, -120);
-   } 
-   else {
-    motorDriver.go(MotorDriver::Motor::LEFT, 255);
-    motorDriver.go(MotorDriver::Motor::RIGHT, 255);
-   }
- }
- 
- delay (50);
+  unsigned char tooClose = 0;
+  for (unsigned char i = 0; i < NUM_ANGLES; i++) {
+    if (distance[i] < 300) {
+      tooClose = 1;
+    }
+    if (tooClose) {
+      motorDriver.go(MotorDriver::Motor::LEFT, -220);
+      motorDriver.go(MotorDriver::Motor::RIGHT, -120);
+    } 
+    else {
+      motorDriver.go(MotorDriver::Motor::LEFT, 255);
+      motorDriver.go(MotorDriver::Motor::RIGHT, 255);
+    }
+  }
+
+  delay (50);
 }
