@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include "motor_driver.h"
 
 #define NUM_ANGLES 7
 
@@ -14,36 +15,7 @@ const int echoPin = 12;
 /* Servo motor pins */
 const int servoPin = 11;
 
-/* Left motor control */
-const int enAPin = 6; // PWD speed control
-const int in1Pin = 7; // Direction 1
-const int in2Pin = 5; // Direction 2
-
-/* Right motor control */
-const int enBPin = 3; // PWD speed control
-const int in3Pin = 4; // Direction 1
-const int in4Pin = 2; // Direction 2
-
-enum Motor {LEFT, RIGHT};
-
-// Set motor speed: 255 full ahead, −255 full reverse , 0 stop
-void go(enum Motor m, int speed) {
-  digitalWrite(m == LEFT ? in1Pin : in3Pin, speed > 0 ? HIGH : LOW);
-  digitalWrite(m == LEFT ? in2Pin : in4Pin, speed <= 0 ? HIGH : LOW);
-  analogWrite(m == LEFT ? enAPin : enBPin, speed < 0 ? -speed : speed);
-}
-
-void testMotors() {
-  static int speed[8] = {128, 255, 128, 0, -128, -255, -128, 0};
-
-  go(RIGHT, 0);
-
-  for (unsigned char i = 0; i < 8; i++ )
-    go(LEFT, speed[i]), delay(200);
-
-  for (unsigned char i = 0; i < 8; i++ )
-    go(RIGHT, speed[i]), delay(200);
-}
+MotorDriver motorDriver = MotorDriver();
 
 double readDistance() {
   digitalWrite(trigPin, HIGH);
@@ -74,24 +46,11 @@ void setup() {
  pinMode(trigPin, OUTPUT);
  pinMode(echoPin, INPUT);
  digitalWrite(trigPin, LOW);
- 
- /* Left motor control */
- pinMode(enAPin, OUTPUT);
- pinMode(in1Pin, OUTPUT);
- pinMode(in2Pin, OUTPUT);
- 
- /* Right motor control */
- pinMode(enBPin, OUTPUT);
- pinMode(in3Pin, OUTPUT);
- pinMode(in4Pin, OUTPUT);
 
  servo.attach(servoPin);
  servo.write(90);
  
- go(LEFT, 0);
- go(RIGHT, 0);
- 
- testMotors();
+ motorDriver.testMotors();
 
  servo.write(sensorAngle[0]);
  delay(200);
@@ -111,12 +70,12 @@ void loop() {
      tooClose = 1;
    }
    if (tooClose) {
-     go(LEFT, -220);
-     go(RIGHT, -120);
+    motorDriver.go(MotorDriver::Motor::LEFT, -220);
+    motorDriver.go(MotorDriver::Motor::RIGHT, -120);
    } 
    else {
-     go(LEFT, 255);
-     go(RIGHT, 255);
+    motorDriver.go(MotorDriver::Motor::LEFT, 255);
+    motorDriver.go(MotorDriver::Motor::RIGHT, 255);
    }
  }
  
